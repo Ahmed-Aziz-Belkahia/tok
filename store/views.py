@@ -1174,6 +1174,8 @@ def add_to_cart(request):
     cart_product[str(request.GET['id'])] = {
         'title': request.GET['title'],
         'qty': request.GET['qty'],
+        'color': request.GET['color'],
+        'size': request.GET['size'],
         'price': request.GET['price'],
         'product_meta_title': request.GET['product_meta_title'],
         'product_is_digital': request.GET['product_is_digital'],
@@ -1717,6 +1719,8 @@ def shipping_address(request):
                     vendor=product.vendor,
                     invoice_no="#" + str(order.oid), 
                     product=item['title'],
+                    color=item['color'],
+                    size=item['size'],
                     image=item['image'],
                     qty=item['qty'],
                     product_obj=product,
