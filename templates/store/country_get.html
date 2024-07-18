@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Bienvenue à la maison !</h1>
+    <h3>Vous visitez depuis :</h3>
+    <ul>
+        <li>Adresse IP : {{ip}}</li>
+        <li>Appareil : {{ device_type}}</li>
+        <li>Navigateur : {{browser_type}} {{browser_version}}</li>
+        <li>Système d'exploitation : {{os_type}} {{os_version}}</li>
+        <li>Ville : {{ location_city }}</li>
+        <li>Pays : {{ location_country }}</li>
+    </ul>
+</body>
+</html>

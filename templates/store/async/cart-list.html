@@ -1,0 +1,356 @@
+<style>
+  ul,
+  li {
+    list-style: none;
+  }
+  @media screen and (max-width: 1100px) {
+    table {
+      border: 0;
+    }
+
+    table caption {
+      font-size: 1.3em;
+    }
+
+    table thead {
+      display: none;
+    }
+
+    table tr {
+      border-bottom: 3px solid #ddd;
+      display: block;
+      margin-bottom: 0.625em;
+    }
+
+    table td,
+    th {
+      border-bottom: 1px solid #ddd;
+      display: block;
+      font-size: 0.8em;
+      text-align: right;
+    }
+
+    table td::before {
+      content: attr(data-label);
+      float: left;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    table td:last-child {
+      border-bottom: 0;
+    }
+  }
+</style>
+<div class="body_content_wrapper position-relative">
+  <!-- Breadcrumb de la page intérieure -->
+  <section class="inner_page_breadcrumb" style="margin-top: 10px">
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-6">
+          <div class="breadcrumb_content">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="{% url 'store:home' %}">Accueil</a>
+              </li>
+              <li class="breadcrumb-item"><a>Boutique</a></li>
+              <li class="breadcrumb-item active" aria-current="page">
+                <a>Panier d'achat</a>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenu du panier d'achat -->
+  <section class="shop-cart pt30">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 col-lg-4 m-auto">
+          <div class="main-title text-center mb50">
+            <h2 class="title">Panier d'achat</h2>
+            <!-- <input type="text" name="" id=""> -->
+          </div>
+        </div>
+      </div>
+      <div class="row mt15" id="cartList">
+        <p class="para">
+          Vous avez <span class="cart-list">{{totalcartitems }}</span> articles dans votre panier
+        </p>
+
+        <div class="col-lg-8 col-xl-9">
+          <div class="shopping_cart_table table-responsive">
+            <table class="table table-borderless">
+              <thead>
+                <tr>
+                  <th scope="col">PRODUIT</th>
+                  <th scope="col">PRIX</th>
+                  <th scope="col">QUANTITÉ</th>
+                  <th scope="col">TOTAL</th>
+                  <th scope="col">MISE À JOUR</th>
+                  <th scope="col">SUPPRIMER</th>
+                </tr>
+              </thead>
+              <tbody class="table_body">
+                {% for product_id, p in cart_data.items %}
+                <tr>
+                  <th scope="row">
+                    <ul class="cart_list d-block d-xl-flex">
+                      <li class="ps-1 ps-sm-4 pe-1 pe-sm-4">
+                        <a href="#"
+                          ><img
+                            src="{{p.image}}"
+                            style="
+                              width: 100px;
+                              height: 80px;
+                              object-fit: cover;
+                              border-radius: 10px;
+                            "
+                            alt="cart1.png"
+                        /></a>
+                      </li>
+                      <li class="ms-2 ms-md-3">
+                        <a
+                          class="cart_title"
+                          href="{% url 'store:product-detail' meta_title=p.product_meta_title %}"
+                        >
+                          <span class="fz16">{{p.title|truncatechars:27}}</span>
+                          <br />
+                          <span class="fz16">Par : <b><i>{{p.brand|title}}</i></b></span>
+                          <br />
+                          <span class="fz16">Quantité en stock: </a><span id="stock_qty{{product_id}}">{{p.product_stock_qty}}</span></span>
+
+                          <br />
+                        </a>
+                      </li>
+                    </ul>
+                  </th>
+                  <td>{{ cs }}{{p.price}}</td>
+                  <input
+                    type="hidden"
+                    class="product-shipping_amount-{{ product_id }}"
+                    value="{{ p.shipping_amount }}"
+                  />
+                  <input
+                    type="hidden"
+                    class="product-product_processing_fee-{{ product_id }}"
+                    value="{{ p.product_processing_fee }}"
+                  />
+                  <input
+                    type="hidden"
+                    class="product-product_tax_fee-{{ product_id }}"
+                    value="{{ p.product_tax_fee }}"
+                  />
+
+                  <input type="hidden" class="product-product_stock_qty-{{ product_id }}" value="{{ p.product_stock_qty }}" />
+
+
+                  <td>
+                    <div class="cart_btn">
+                      <div class="quantity-block">
+                        <button
+                          class="quantity-arrow-minus inner_page"
+                          id="decrease-btn"
+                          data-btn="{{product_id}}"
+                          data-cart-index="{{ product_id }}"
+                        >
+                          <span class="fa fa-minus"></span>
+                        </button>
+                        <input
+                          class="quantity-num-{{ product_id }} quantity-num inner_page product-qty-{{ product_id }}"
+                          id="qty{{product_id}}"
+                          type="number"
+                          value="{{p.qty}}"
+                        />
+                        <button
+                          class="quantity-arrow-plus inner_page"
+                          id="increase-btn"
+                          data-btn="{{product_id}}"
+                          data-cart-index="{{ product_id }}"
+                        >
+                          <span class="fas fa-plus"></span>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- <input class="cart_count text-center" placeholder="2" type="number"> -->
+                  </td>
+                  <td class="">{{ cs }}{% widthratio p.price 1 p.qty %}</td>
+                  <td class="action text-center" data-title="Remove">
+                    <button
+                      style="border: none; background: none"
+                      class="text-body update-item"
+                      data-item="{{ product_id }}"
+                    >
+                      <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                  </td>
+                  <td class="action text-center" data-title="Remove">
+                    <button
+                      style="border: none; background: none"
+                      class="text-body delete-item"
+                      data-item="{{ product_id }}"
+                    >
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td>
+                    Votre panier est vide,
+                    <a href="{% url 'store:home' %}">continuez vos achats</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-lg-4 col-xl-3">
+          <div class="order_sidebar_widget style2">
+              <h4 class="title">Total du panier</h4>
+
+                    
+              <ul>
+                  <li class="subtitle">
+                      <p>
+                          Sous-total du produit
+                          <span class="float-end">{{ cs }}{{cart_total_amount|floatformat:2}}</span>
+                      </p>
+                  </li>
+                  <li class="subtitle">
+                      <p>
+                          Livraison estimée
+                          <i data-bs-toggle="tooltip" data-bs-placement="top" title="Tooltip on top" class="bi bi-info-circle-fill"></i>
+                          <span class="float-end">{{ cs }}{{total_shipping_amount|floatformat:2}}</span>
+                      </p>
+                  </li>
+                  <li class="subtitle">
+                      <p>
+                          {{tax_country.custom_name}} estimé
+                          <i data-bs-toggle="tooltip" data-bs-placement="top" title="Tooltip on top" class="bi bi-info-circle-fill"></i>
+                          <span class="float-end">{{cs}}{{ tax_amount_|floatformat:2 }}</span>
+                      </p>
+                  </li>
+                  <li class="subtitle">
+                      <p>
+                          Frais de service
+                          <span class="float-end">{{ cs }}{{service_fee_amount|floatformat:2}}</span>
+                      </p>
+                  </li>
+                  <li class="subtitle"><hr /></li>
+                  <li class="subtitle totals">
+                      <p>
+                          Total
+                          <span class="float-end">{{cs}}{{total_amount|floatformat:2}}</span>
+                      </p>
+                  </li>
+      
+                  {% if coupon_name %}
+                  <li><b>{{coupon_name}}</b> Coupon Applied</li>
+                  {% endif %} {% for item in coupon_name.items %} hi {% endfor %}
+              </ul>
+          </div>
+      
+          <a href="{% url 'store:shipping_address' %}" class="btn w100 mt-4 purple-btn">Continuer</a>
+      </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+// Function to handle quantity update
+function updateQuantity(id, operation) {
+  let input_value = parseInt($("#qty" + id).val());
+  const product_stock_qty = parseInt($(".product-product_stock_qty-" + id).val());
+
+  if (operation === 'increase' && input_value < product_stock_qty) {
+      input_value++;
+  } else if (operation === 'decrease' && input_value > 1) {
+      input_value--;
+  }
+
+  $("#qty" + id).val(input_value);
+
+  // Update the cart with new quantity
+  $(".update-item[data-item='" + id + "']").click();
+}
+
+// Attach event listeners
+{% comment %} $(document).on('click', '.increase-btn', function() {
+  const id = $(this).attr('data-btn');
+  updateQuantity(id, 'increase');
+});
+
+$(document).on('click', '.decrease-btn', function() {
+  const id = $(this).attr('data-btn');
+  updateQuantity(id, 'decrease');
+}); {% endcomment %}
+
+$(document).on('click', '.update-item', function() {
+  var _pId = $(this).attr('data-item');
+  var _vm = $(this);
+
+  var _pQty = $(".product-qty-" + _pId).val();
+  let shipping_amount = $(".product-shipping_amount-" + _pId).val();
+  let product_processing_fee = $(".product-product_processing_fee-" + _pId).val();
+  let product_tax_fee = $(".product-product_tax_fee-" + _pId).val();
+  let product_stock_qty = $(".product-product_stock_qty-" + _pId).val();
+  
+  if (parseInt(_pQty) > parseInt(product_stock_qty)) {
+      Swal.fire({
+          icon: 'warning',
+          title: 'Oops... Stock Qty Exceeded!',
+          text: 'You are exceeding the stock current quantity of ' + product_stock_qty,
+      });
+      $(".product-qty-" + _pId).val(product_stock_qty);
+  } else {
+      // Ajax call to update cart
+      $.ajax({
+          url: '/ajax/update-cart/',
+          data: {
+              'id': _pId,
+              'qty': _pQty,
+              'shipping_amount': shipping_amount,
+              'product_tax_fee': product_tax_fee,
+              'product_processing_fee': product_processing_fee,
+          },
+          dataType: 'json',
+          beforeSend: function() {
+              _vm.attr('disabled', true);
+          },
+          success: function(res) {
+              _vm.attr('disabled', false);
+              $("#cartList").html(res.data);
+          }
+      });
+  }
+});
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const shippingOptions = document.querySelectorAll('.colors__divs .divs__div');
+
+    shippingOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            // Remove 'selected' class from all options
+            shippingOptions.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            // Add 'selected' class to the clicked option
+            option.classList.add('selected');
+
+            // Set the value of the hidden input based on the selected option
+            document.getElementById('selectedColorInput').value = option.classList.contains('pick_up_in_store') ? "0" : "1";
+
+            // Update selected shipping method
+            const selectedShippingMethod = document.getElementById('selectedColorInput').value;
+            console.log('Selected Shipping Method:', selectedShippingMethod);
+
+            // Call a function to reload prices based on the selected method
+        });
+    });
+});
+</script>

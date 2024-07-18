@@ -1,0 +1,85 @@
+{% extends "partials/base.html" %}
+
+{% load static %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/flaticon@0.1.0/main.min.js"></script>
+  
+  <div class="body_content_wrapper position-relative">
+    <!-- Inner Page Breadcrumb -->
+    <section class="inner_page_breadcrumb">
+      <div class="container">
+        <div class="row">
+          <div class="col-xl-6">
+            <div class="breadcrumb_content">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a>Home</a></li>
+                <li class="breadcrumb-item"><a>{{company.name}}</a></li>
+                <li class="breadcrumb-item"><a>About Us</a></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- About Us & Team -->
+    <section class="our-team pt0 pb40">
+      <div class="container">
+       
+        <div class="row">
+          <div class="col-xl-10 m-auto pt30">
+            <div class="about_us_content mb30 mt15" style="margin-bottom: 50px;">
+                <p>{{ about_us.about_us|safe }}</p>
+            </div>
+        {% include 'addons/faqs_plugin.html' %}
+            
+          </div>
+        <div class="row mt60">
+          <div class="col-xl-10 m-auto pt60 bdrt1">
+            <div class="main-title">
+              <h2>Pourquoi nous choisir ?</h2>
+            </div>
+          </div>
+          <div class="col-xl-10 m-auto">
+            <div class="row">
+              <div class="col-sm-6 col-md-4">
+                <div class="icon_boxes about_style text-center">
+                  <div class="icon">
+                    <span class="bi bi-shield-fill-check"></span>
+                  </div>
+                  <div class="details">
+                    <h4 class="title">Garantie d'argent</h4>
+                    <p class="para">.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-4">
+                <div class="icon_boxes about_style text-center">
+                  <div class="icon">
+                    <span class="bi bi-headset"></span>
+                  </div>
+                  <div class="details">
+                    <h4 class="title">Online Support</h4>
+                    <p class="para">24 hours a day, 7 days a week</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-4">
+                <div class="icon_boxes about_style text-center">
+                  <div class="icon">
+                    <span class="bi bi-credit-card-fill"></span>
+                  </div>
+                  <div class="details">
+                    <h4 class="title">Avantages membres</h4>
+                    <p class="para">des réductions spéciales</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+      {% endblock content %}

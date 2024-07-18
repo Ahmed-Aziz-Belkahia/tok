@@ -1,0 +1,108 @@
+{% extends "partials/base.html" %}
+{% load static %}
+
+{% block title %}
+{{category__.title}}
+{% endblock title %}
+  {% block hhead %}
+  <link rel="canonical" href="https://www.gameszone.tn/shop/" />
+{% endblock hhead %}
+{% block content %}
+<style>
+    ul,li{
+       list-style: none;
+    }
+    .page-link{
+      background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 50% !important;
+        color: #051036;
+        font-family: "Jost";
+        font-style: normal;
+        font-weight: 500 !important;
+        font-size: 14px;
+        height: 50px;
+        line-height: 50px;
+        overflow: hidden;
+        padding: 0;
+        text-align: center;
+        width: 50px;
+        border: 1px solid #112137;
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+    }
+ </style>
+    <!-- Vue en grille de liste -->
+    <section class="deliver-divider pb70">
+      <div class="container">
+          <div class="row">
+              <div class="col-lg-10">
+              <div class="main-title text-center text-sm-start mb80-520 mb25-414">
+                  <h2 class="title"><b>"{{category__.title}}"</b> Catégorie</h2>
+              </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-lg-12">
+              <div class="shop_item_4grid_slider dots_none owl-theme owl-carousel">
+                            
+                            {% for p in top_selling %}
+                                
+                            {% include 'store/product_list.html' %}
+
+                            {% endfor %}
+                            
+                        </div>
+              </div>
+          </div>
+          
+      </div>
+  </section>
+  <section class="our-listing pt0">
+    <div class="container">
+      
+      
+      
+      <div class="row mt60">
+        <div class="col-lg-12 col-xl-12 pl50 pl15-md">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="main-title bbf1 pb10">
+                <h2 class="title">{{category__.title}}</h2>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="row">
+              {% for p in products %}
+                <div class="col-sm-6 col-lg-3 col-xl-3 p0 pl15-520  mb-2">
+                    {% include 'store/product_list.html' %}
+
+                </div>
+              {% endfor %}
+            </div>
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="mbp_pagination mt30 text-center">
+                  <ul class="page_navigation">
+                      {% if products.has_previous %}
+                        <li class="page-item">
+                        <a class="page-link" href="{% url 'store:shop' %}?page={{products.previous_page_number}}" tabindex="-1" aria-disabled="true"> <span class="fas fa-angle-left"></span></a>
+                        </li>
+                    {% endif %}
+                    
+                    {% if products.has_next %}
+                        <li class="page-item">
+                        <a class="page-link" href="{% url 'store:shop' %}?page={{products.next_page_number}}"><span class="fas fa-angle-right"></span></a>
+                        </li>
+                    {% endif %}
+                    </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+    {% endblock content %}

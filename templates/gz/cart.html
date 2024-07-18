@@ -1,0 +1,142 @@
+{% extends "gz/base.html" %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static "gz/styles/cart.css" %}">
+<title>GameZone | Panier</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+{% endblock head %}
+
+{% block title %}
+<title>Panier</title>
+{% endblock title %}
+
+{% block header %}
+    {% include 'gz/components/navigation.html' %}
+{% endblock header %}
+
+{% block main %}
+<div class="main__cart">
+    <div class="cart__div">
+        {% if cart %}
+            <ul id="cart__list">
+                {% for item in cart %}
+                    <li class="list__item">
+                        <!-- Item details here -->
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="cart-buttons">
+                <a href="{% url 'catalog' %}" class="back-to-shopping-btn">Retour à Shopping</a>
+                <a href="{% url 'checkout' %}" class="checkout-btn">Checkout</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock main %}
+
+{% block footer %}
+{% endblock footer %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                checkboxes.forEach(cb => {
+                    if (cb !== this) {
+                        cb.checked = false;
+                    }
+                });
+            });
+        });
+
+        const increaseButtons = document.querySelectorAll('#increase');
+        increaseButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const itemId = this.dataset.itemId;
+                increaseValue(itemId);
+            });
+        });
+
+        const decreaseButtons = document.querySelectorAll('#decrease');
+        decreaseButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const itemId = this.dataset.itemId;
+                decreaseValue(itemId);
+            });
+        });
+        
+        function updateQuantity(itemId, value) {
+            $.ajax({
+                type: 'POST',
+                url: '/update-cart-item-quantity/',
+                data: {itemId: itemId, quantity: value},
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader('X-CSRFToken', getCookie("csrftoken"));
+                },
+                success: function (response) {
+                    console.log(response);                    
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error updating cart item quantity:', error);
+                }
+            });
+        }
+
+        function increaseValue(itemId) {
+            let value = parseInt($('#number' + itemId).val(), 10);
+            value = isNaN(value) ? 0 : value;
+            value++;
+            updateQuantity(itemId, value)
+            $('#number' + itemId).val(value);
+        }
+        
+        function decreaseValue(itemId) {
+            let value = parseInt($('#number' + itemId).val(), 10);
+            value = isNaN(value) ? 0 : value;
+            value = Math.max(1, value - 1);
+            updateQuantity(itemId, value)
+            $('#number' + itemId).val(value);
+        }
+
+        const deleteButtons = document.querySelectorAll('.delete-item-btn');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const itemId = button.dataset.itemId;
+                $.ajax({
+                    type: 'POST',
+                    url: '/delete-cart-item/',
+                    data: { itemId: itemId },
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader('X-CSRFToken', getCookie("csrftoken"));
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        button.closest('.list__item').remove();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error deleting cart item:', error);
+                    }
+                });
+            });
+        });
+    });
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock scripts %}

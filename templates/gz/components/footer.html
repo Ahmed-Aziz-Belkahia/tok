@@ -1,0 +1,136 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static "gz/styles/components/footer.css" %}">
+
+<div class="footer flexCenter">
+
+    <div class="footer__div flexCenter">
+
+        <div class="footer__column footer__column1 flexCenter">
+            
+            <div class="column__title">Jeux vidéo</div>
+
+            <div class="column__links flexCenter">
+                <a href='{% url 'store:product-detail' meta_title="xbox" %}' class="links__link">Playstation Plus</a>
+                <a href='catalog?manufacturer=2' class="links__link">Nintendo Eshop</a>
+                <a href='catalog?manufacturer=2' class="links__link">Calendrier Des Sorties</a>
+                <a href="#browseByCategory" class="links__link">Autre Catégorie</a>
+
+            </div>
+
+        </div>
+
+        <div class="footer__column footer__column2 flexCenter">
+            
+            <div class="column__title">À propos</div>
+
+            <div class="column__links flexCenter">
+
+                <a href='{% url "addons:terms_and_conditions" %}' class="links__link">Conditions Générales de vente</a>
+                <a href='{% url "addons:privacy_policy" %}' class="links__link">Politique de Confidentialité</a>
+                <a href='{% url "addons:return_policy" %}' class="links__link">Expédition & retour</a>
+                <a href='{% url "addons:secure_purchases" %}' class="links__link">Achats sécurisés</a>
+                <a href="{% url "core:profile" %}orders" class="links__link">Statut de la commande</a>
+
+            </div>
+
+        </div>
+
+        <div class="footer__column footer__column3 flexCenter">
+            
+            <div class="column__title">INFORMATIONS DE CONTACT</div>
+
+            <div class="column__links flexCenter">
+
+                <a href="tel:29220545" class="links__link">+216 54373657</a>
+                <a class="links__link">Demande De Devis</a>
+                <a class="links__link">GameZone, Tunis , Ariana</a>
+                <a class="links__link">Site Map</a>
+                <a class="links__link">À Droit</a>
+
+            </div>
+
+        </div>
+
+        <div class="footer__column footer__column4 flexCenter">
+            
+            <div class="column__title">S'inscrire</div>
+
+            <div class="column__singup flexCenter">
+
+                <div class="signup__text">Obtenez des promotions exclusives, Coupons
+                </div>
+
+                <form id="emailForm">
+                    {% csrf_token %}
+                    <div class="signup__input flexCenter">
+
+                        <div class="input__input">
+    
+                            <input type="email" id="email-opt-in" class="form-control" placeholder="Votre adresse e-mail" id="news-letter-input"/>
+    
+                        </div>
+                        <div class="submitButton input__button flexCenter">S'inscrire</div>
+    
+                    </div>
+                </form>
+
+            </div>
+
+            <div class="column__socials flexCenter">
+
+                <div class="socials__text">NOUS REJOINDRE</div>
+
+                <div class="socials__icons flexCenter">
+
+                    <a href='https://www.facebook.com/gamezoneariana' class="icons__icon" rel="noreferrer"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/gamezoneariana/" class="icons__icon" rel="noreferrer"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+    <div class="footer__bottom flexCenter">
+        <div class="bottom__text">© 2024 Game Zone. Tous droits réservés</div>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var submitButton = document.querySelector(".submitButton");
+    
+        submitButton.addEventListener("click", function(event) {
+            event.preventDefault(); // Empêche le formulaire de se soumettre
+            email = document.querySelector("#email-opt-in").value
+            $.ajax({
+                type: 'POST',
+                url: "{% url "addons:subscribe_to_newsletter" %}",
+                data: {"email": email}, // Utilisez l'objet simple
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader('X-CSRFToken', getCookie("csrftoken"));
+                },
+                success: function(response) {
+                    console.log(response);
+                    if (response.success !== false) {
+                        submitButton.disabled = true; // Désactive le bouton de soumission
+                        submitButton.innerText = "TERMINÉ";
+                    }
+                    // Vous pouvez éventuellement mettre à jour l'interface utilisateur ici si nécessaire
+                },
+                error: function(error) {
+                    console.error('Erreur lors de l'envoi des données du formulaire :', error);
+                }
+            });
+        });
+    });
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies

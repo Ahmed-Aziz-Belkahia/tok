@@ -1,0 +1,373 @@
+{% extends "partials/base.html" %}
+{% load static %}
+{% block title %}
+    Panier
+{% endblock title %}
+{% block content %}
+{% load crispy_forms_tags %}
+<style>
+  ul,
+  li {
+    list-style: none;
+  }
+  @media screen and (max-width: 1100px) {
+    table {
+      border: 0;
+    }
+
+    table caption {
+      font-size: 1.3em;
+    }
+
+    table thead {
+      display: none;
+    }
+
+    table tr {
+      border-bottom: 3px solid #ddd;
+      margin-bottom: 0.625em;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    table td,
+    th {
+      border-bottom: 1px solid #ddd;
+      display: block;
+      font-size: 0.8em;
+      text-align: right;
+    }
+
+    table td::before {
+      content: attr(data-label);
+      float: left;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    table td:last-child {
+      border-bottom: 0;
+    }
+    .colors__divs{
+      flex-direction: column;
+    }
+  }
+  .colors__divs {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+    justify-content: space-evenly;
+  }
+  .divs__div.color {
+    position: relative;
+    overflow: hidden;
+    align-items: self-start;
+    background-color: transparent;
+    border: 2px solid gray;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    outline: none;
+    width: 100%;
+  }
+  .shipping_option_container {
+    padding: 1rem;
+    width: 100%;
+}
+.shipping_option_container p {
+  font-size: .8125rem;
+  font-weight: 400;
+  line-height: 1.1;
+  margin: 0;
+  padding: 1rem 0 0;
+  text-align: left;
+  color: gray;
+}
+.divs__div.color.selected {
+  border-color: var(--MS-C);
+  border-width: 2px;
+}
+.lucide-truck, .lucide-store{
+  width: fit-content;
+}
+.shipping_text{
+  width: fit-content;
+    font-weight: 900;
+    font-size: large;
+    font-style: italic;
+    color: black;
+}
+@media screen and (max-width: 768px){
+  table tr {
+    border-bottom: 3px solid #ddd;
+    margin-bottom: 0.625em;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+  }
+  .shopping_cart_table .table tbody.table_body tr th, .shopping_cart_table .table tbody.table_body tr td{
+    padding: 0;
+  }
+  
+}
+.purple-btn{
+  color: white !important;
+}
+</style>
+<div class="body_content_wrapper position-relative" id="cartList">
+  <!-- Breadcrumb de la page intérieure -->
+  <section class="inner_page_breadcrumb" style="margin-top: 10px">
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-6">
+          <div class="breadcrumb_content">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="{% url 'store:home' %}">Accueil</a>
+              </li>
+              <li class="breadcrumb-item"><a>Boutique</a></li>
+              <li class="breadcrumb-item active" aria-current="page">
+                <a>Panier d'achats</a>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenu du panier d'achats -->
+  <section class="shop-cart pt30">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 col-lg-4 m-auto">
+          <div class="main-title text-center mb50">
+            <h2 class="title">Panier d'achat</h2>
+            <!-- <input type="text" name="" id=""> -->
+          </div>
+        </div>
+      </div>
+      <div class="row mt15" id="cartList">
+        <p class="para">
+          You have <span class="cart-list">{{totalcartitems }}</span> items in
+          your cart
+        </p>
+
+        <div class="col-lg-8 col-xl-9">
+          <div class="shopping_cart_table table-responsive">
+            <table class="table table-borderless">
+              <thead>
+                <tr>
+                  <th scope="col">PRODUIT</th>
+                  <th scope="col">PRIX</th>
+                  <th scope="col">QUANTITÉ</th>
+                  <th scope="col">TOTAL</th>
+                  <th scope="col">MISE À JOUR</th>
+                  <th scope="col">SUPPRIMER</th>
+                </tr>
+              </thead>
+              <tbody class="table_body">
+                {% for product_id, p in cart_data.items %}
+                <tr>
+                  <th scope="row">
+                    <ul class="cart_list d-block d-xl-flex">
+                      <li class="ps-1 ps-sm-4 pe-1 pe-sm-4">
+                        <a href="#"
+                          ><img
+                            src="{{p.image}}"
+                            style="
+                              width: 100px;
+                              height: 80px;
+                              object-fit: cover;
+                              border-radius: 10px;
+                            "
+                            alt="cart1.png"
+                        /></a>
+                      </li>
+                      <li class="ms-2 ms-md-3">
+                        <a
+                          class="cart_title"
+                          href="{% url 'store:product-detail' meta_title=p.product_meta_title %}"
+                        >
+                          <span class="fz16">{{p.title|truncatechars:27}}</span>
+                          <br />
+                        </a>
+                      </li>
+                    </ul>
+                  </th>
+                  <td>{{ cs }}{{p.price}}</td>
+                  <input
+                    type="hidden"
+                    class="product-shipping_amount-{{ product_id }}"
+                    value="{{ p.shipping_amount }}"
+                  />
+                  <input
+                    type="hidden"
+                    class="product-product_processing_fee-{{ product_id }}"
+                    value="{{ p.product_processing_fee }}"
+                  />
+                  <input
+                    type="hidden"
+                    class="product-product_tax_fee-{{ product_id }}"
+                    value="{{ p.product_tax_fee }}"
+                  />
+
+                  <input type="hidden" class="product-product_stock_qty-{{ product_id }}" value="{{ p.product_stock_qty }}" />
+
+
+                  <td>
+                    <div class="cart_btn">
+                      <div class="quantity-block">
+                        <button
+                          class="quantity-arrow-minus inner_page"
+                          id="decrease-btn"
+                          data-btn="{{product_id}}"
+                          data-cart-index="{{ product_id }}"
+                        >
+                          <span class="fa fa-minus"></span>
+                        </button>
+                        <input
+                          class="quantity-num-{{ product_id }} quantity-num inner_page product-qty-{{ product_id }}"
+                          id="qty{{product_id}}"
+                          type="number"
+                          value="{{p.qty}}"
+                        />
+                        <button
+                          class="quantity-arrow-plus inner_page"
+                          id="increase-btn"
+                          data-btn="{{product_id}}"
+                          data-cart-index="{{ product_id }}"
+                        >
+                          <span class="fas fa-plus"></span>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- <input class="cart_count text-center" placeholder="2" type="number"> -->
+                  </td>
+                  <td class="">{{ cs }}{% widthratio p.price 1 p.qty %}</td>
+                  <td class="action text-center" data-title="Remove">
+                    <button
+                      style="border: none; background: none"
+                      class="text-body update-item"
+                      data-item="{{ product_id }}"
+                    >
+                      <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                  </td>
+                  <td class="action text-center" data-title="Remove">
+                    <button
+                      style="border: none; background: none"
+                      class="text-body delete-item"
+                      data-item="{{ product_id }}"
+                    >
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td>
+                    Votre panier est vide.
+                    <a href="{% url 'store:shop' %}">Poursuivre les achats</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-lg-4 col-xl-3">
+          <div class="order_sidebar_widget style2">
+            <h4 class="title">Totaux du Panier</h4>
+            <ul>
+              <li class="subtitle">
+                <p>
+                  Sous-total 
+                  <span class="float-end"
+                    >{{ cs }}{{cart_total_amount|floatformat:2}}</span
+                   <li class="subtitle"><hr /></li>
+                  <li class="subtitle totals">
+                <p>
+                  Total
+                  <span class="float-end"
+                    >{{cs}}{{total_amount|floatformat:2}}</span
+                  >
+                </p>
+              </li>
+
+              {% if coupon_name %}
+              <li><b>{{coupon_name}}</b> Coupon Applied</li>
+              {% endif %} {% for item in coupon_name.items %} hi {% endfor %}
+            </ul>
+          </div>
+
+          <a
+            href="{% url 'store:shipping_address' %}"
+            class="btn w100 mt-4 purple-btn"
+            >Continue</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  $(document).on("click", "#increase-btn", function () {
+    let id = $(this).attr("data-btn");
+    var input_value = $("#qty" + id).val();
+    console.log(input_value)
+    if (input_value >= 0) {
+      input_value++;
+      $("#qty" + id).val(input_value);
+    }
+  });
+
+  $(document).on("click", "#decrease-btn", function () {
+    let id = $(this).attr("data-btn");
+    var input_value = $("#qty" + id).val();
+    console.log(input_value)
+    if (input_value >= 0) {
+      input_value--;
+      $("#qty" + id).val(input_value);
+    }
+
+    if (input_value === 0) {
+      $("#qty" + id).val(1);
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const shippingOptions = document.querySelectorAll('.colors__divs .divs__div');
+
+    shippingOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            shippingOptions.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            option.classList.add('selected');
+
+            document.getElementById('selectedColorInput').value = option.classList.contains('pick_up_in_store') ? "0" : "1";
+
+            const selectedShippingMethod = document.getElementById('selectedColorInput').value;
+            console.log('Selected Shipping Method:', selectedShippingMethod);
+
+            reloadPrices(selectedShippingMethod);
+        });
+    });
+
+    document.querySelector('.ship_to_home').click();
+});
+
+function reloadPrices(selectedShippingMethod) {
+    console.log('Reloading prices for shipping method:', selectedShippingMethod);
+}
+        
+</script>
+
+{% endblock content %}
